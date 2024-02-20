@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        var EcidLoader = function () { "use strict"; const t = (t, e) => { if (t) { const r = Object.prototype.toString.call(e.prototype); let o = Object.getPrototypeOf(t); for (; o;) { if (Object.prototype.toString.call(o) === r) return !0; o = Object.getPrototypeOf(o) } } return !1 }, e = e => "string" == typeof e || t(e, String), r = t => "[object Object]" === Object.prototype.toString.call(t), o = e => t(e, Document), i = t => { if (!e(t)) throw new Error(`${t} is not a string`); return 0 === n(t).length }, n = t => { if (!e(t)) throw new Error(`${t} is not a string`); return t.replace(/\s/g, "") }, s = (n, s, c) => { var a, d; if ((t(a = n, HTMLElement) || o(a) || n instanceof SVGElement) && r(s)) for (const t in s) { const r = "number" == typeof (d = s[t]) && !isNaN(d) && isFinite(d) ? String(s[t]) : s[t]; e(r) && !i(r) && c(n, t, r) } }; class c extends URL { macrosList = []; static hasProtocol(t) { return /^(https|http):\/\/.+/.test(t) } constructor(t) { super(c.hasProtocol(t) ? t : "https:" + t), Object.setPrototypeOf(this, c.prototype) } setMacros(t, r) { if (r = r?.toString(), e(t) && !i(t) && !i(r)) { t = t.replace(/[^a-zA-Z0-9 ]/g, ""); const e = { value: r, template: new RegExp(`\\!\\[${t}\\]`) }; this.macrosList.push(e) } return this } setRnd() { return this.setMacros("rnd", (t => { const e = +`1E${t || 10}`, r = e / 10; return Math.floor(r + Math.random() * (e - r)) })(6)), this } setParams(t) { if (r(t)) for (const e in t) this.searchParams.set(e, t[e].toString()); return this } toString() { let t = decodeURIComponent(super.toString()); for (const { value: e, template: r } of this.macrosList) t = t.replace(r, e); return new URL(t).toString() } httpslize() { return "https:" !== this.protocol && (this.protocol = "https:"), this } } class a { static instance; ecid; constructor() { if (a.instance) return a.instance; a.instance = this } getEcid() { if (!this.ecid) { const t = document.createElement("iframe"); s(t, { width: "0px", height: "0px" }, ((t, e, r) => t.style.setProperty(e, r))), t.src = new c("https://ad.adriver.ru/cgi-bin/rle.cgi?sid=1&ad=780801&bt=21&pid=3915086&bid=10043329&bn=10043329&rnd=527366301&tuid=1&cfa=1").toString(), this.ecid = new Promise(((r, o) => { const n = c => { c?.data && "eCid" in c.data && (t.remove(), window.removeEventListener("message", n), clearTimeout(s), !e(c.data.eCid) || i(c.data.eCid) ? o(new Error("EcidLoader: invalid eCid.")) : r(c.data.eCid)) }, s = setTimeout((() => { t.remove(), window.removeEventListener("message", n), o(new Error("EcidLoader: timeOut error.")) }), 7e3); window.addEventListener("message", n) })), document.body.append(t) } return this.ecid } } return a }();
+    </script>
+
+    <script>
+        new EcidLoader().getEcid()
+            .then(ecid => {
+                const h = document.createElement("h3");
+                h.innerText = ecid;
+                document.body.append(h);
+            })
+            .catch(error => console.error(error));
+    </script>
+
+</body>
+
+</html>
